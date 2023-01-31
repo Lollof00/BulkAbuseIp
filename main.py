@@ -1,8 +1,9 @@
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
-from AbuseRequest import MakeRequest
 import csv
 import os
+import xlsxwriter
+
+from AbuseRequest import MakeRequest, writeXlsx
+
 
 def main():
     #Tk().withdraw()
@@ -15,23 +16,38 @@ def main():
             for i in row:
                 raw.append(i.split(",")[0])
 
-    '''
-    result = open("AbuseResults.txt", "a")
-    if os.stat(os.path.abspath(result.name)).st_size != 0:
-        open("AbuseResults.txt","w").close()
-    '''
     Indirizzi = []
     for i in raw[2:]:
         Indirizzi.append(i.strip('\"'))
 
     print(Indirizzi)
 
-    with open("report.csv","w", encoding="UTF8", newline='') as f:
-        for ip in Indirizzi:
-           MakeRequest(ip,f)
-           print("\n")
-        os.startfile(os.path.abspath(f.name))
+    wb= xlsxwriter.Workbook("reports.xlsx")
+    worksheet = wb.add_worksheet()
 
+    bold = wb.add_format({'bold': True})
+
+    worksheet.write('A1', 'Ip Address', bold)
+    worksheet.write('B1', 'Confidence of Abuse', bold)
+    worksheet.write('C1', 'Total Reports', bold)
+    worksheet.write('D1', 'ISP', bold)
+    worksheet.write('E1', 'Domain', bold)
+    worksheet.write('F1', 'Hostname', bold)
+    worksheet.write('G1', 'Country', bold)
+
+    worksheet.set_column(0,7,30)
+
+    data = []
+    for ip in Indirizzi:
+        data.append(MakeRequest(ip))
+
+    print(data)
+
+    writeXlsx(data,worksheet)
+
+    wb.close()
+
+    #os.startfile(os.path.abspath("reports.xlsx"))
 
 if __name__ == '__main__':
     main()
