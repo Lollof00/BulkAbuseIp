@@ -1,16 +1,19 @@
 import csv
 import os
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 import xlsxwriter
 
 from AbuseRequest import MakeRequest, writeXlsx
 
 
 def main():
-    #Tk().withdraw()
-    #filename = askopenfilename()
-    #f = open(filename, "r")
+    Tk().withdraw()
+    filename = askopenfilename()
+
     raw = []
-    with open('provacsv.csv', newline='') as csvfile:
+    with open(filename, newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
         for row in spamreader:
             for i in row:
